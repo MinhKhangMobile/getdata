@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quản lý ra vào phòng</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+            background-color: #f7f6f6;
+            color: rgb(42, 31, 56);
+        }
+        h1 {
+            text-align: center;
+        }
+        form {
+            margin-bottom: 20px;
+            color: rgb(42, 31, 56);
+        }
+        table {
+            margin-top: 20px;
+            width: 100%;
+            border-collapse: collapse;
+        }
+        table, th, td {
+            border: 1px solid #ddd;
+        }
+        th, td {
+            padding: 10px;
+            text-align: center;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+        button {
+            margin-top: 10px;
+            padding: 5px 10px;
+            cursor: pointer;
+            border: none;
+            background-color: #9196d8;
+            border-radius: 20px;
+        }
+        button.delete {
+            background-color: red;
+            color: white;
+            border: none;
+        }
+        #name, #department, #employeeId{
+            border-radius: 20px;
+            width: 200px;
+            height: 20px;
+            border: none;
+            background-color: #ffff;
+            border: #46d47c 1px solid;
+            margin-left: 5px;
+        }
+        .btn-luu{
+            border: none;
+            background-color: #46d47c;
+            border-radius: 20px;
+        }
+        .btn-dangnhap{
+            border: none;
+            background-color: #46d47c;
+            border-radius: 20px;
+            margin-left: 20px;
+        }
+        
+    </style>
+</head>
+<body>
+    <h1>Quản lý ra vào phòng IT</h1>
+
+    <form id="entryForm">
+        <label for="name">Tên:</label>
+        <input type="text" id="name" required>
+        <label for="department">Bộ phận:</label>
+        <input type="text" id="department" required>
+        <label for="employeeId">Mã nhân viên:</label>
+        <input type="text" id="employeeId" required>
+        <button class="btn-dangnhap" type="submit">Đăng nhập</button>
+    </form>
+
+    <button class="btn-luu" onclick="downloadExcel()">Lưu về Excel</button>
+    <table>
+        <thead>
+            <tr>
+                <th>Tên</th>
+                <th>Bộ phận</th>
+                <th>Mã nhân viên</th>
+                <th>Thời gian vào</th>
+                <th>Thời gian ra</th>
+                <th>Hành động</th>
+            </tr>
+        </thead>
+        <tbody id="entryTableBody">
+        </tbody>
+    </table>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.16.9/xlsx.full.min.js"></script>
+    <script>
+        let entries = [];
+
+        function renderTable() {
+            const tableBody = document.getElementById('entryTableBody');
+            tableBody.innerHTML = ''; // Xóa nội dung cũ
+
+            entries.forEach((entry, index) => {
+                const row = document.createElement('tr');
+
+                const nameCell = document.createElement('td');
+                nameCell.textContent = entry.name;
+                row.appendChild(nameCell);
+
+                const departmentCell = document.createElement('td');
+                departmentCell.textContent = entry.department;
+                row.appendChild(departmentCell);
+
+                const employeeIdCell = document.createElement('td');
+                employeeIdCell.textContent = entry.employeeId;
+                row.appendChild(employeeIdCell);
+
+                const entryTimeCell = document.createElement('td');
+                entryTimeCell.textContent = entry.entryTime;
+                row.appendChild(entryTimeCell);
+
+                const exitTimeCell = document.createElement('td');
+                exitTimeCell.textContent = entry.exitTime || 'Chưa ra';
+                row.appendChild(exitTimeCell);
+
+                const actionCell = document.createElement('td');
+
+                if (!entry.exitTime) {
+                    const exitButton = document.createElement('button');
+                    exitButton.textContent = 'Đăng xuất';
+                    exitButton.onclick = () => {
+                        entry.exitTime = new Date().toLocaleString();
+                        renderTable();
+                    };
+                    actionCell.appendChild(exitButton);
+                }
+
+                const deleteButton = document.createElement('button');
+                deleteButton.textContent = 'Xóa';
+                deleteButton.className = 'delete';
+                deleteButton.onclick = () => {
+                    entries.splice(index, 1);
+                    renderTable();
+                };
+                actionCell.appendChild(deleteButton);
+
+                row.appendChild(actionCell);
+
+                tableBody.appendChild(row);
+            });
+        }
+
+        document.getElementById('entryForm').addEventListener('submit', function(event) {
+            event.preventDefault();
+
+            const name = document.getElementById('name').value;
+            const department = document.getElementById('department').value;
+            const employeeId = document.getElementById('employeeId').value;
+            const entryTime = new Date().toLocaleString();
+
+            entries.push({ name, department, employeeId, entryTime, exitTime: null });
+            renderTable();
+
+            // Xóa nội dung nhập sau khi thêm
+            document.getElementById('name').value = '';
+            document.getElementById('department').value = '';
+            document.getElementById('employeeId').value = '';
+        });
+
+        function downloadExcel() {
+            // Chuyển đổi dữ liệu thành định dạng của bảng tính
+            const worksheet = XLSX.utils.json_to_sheet(entries);
+            const workbook = XLSX.utils.book_new();
+            XLSX.utils.book_append_sheet(workbook, worksheet, "Entries");
+
+            // Tạo và tải tệp Excel
+            XLSX.writeFile(workbook, 'quan_ly_ra_vao.xlsx' );
+            
+        }
+
+        renderTable(); // Khởi tạo bảng
+    </script>
+</body>
+</html>
