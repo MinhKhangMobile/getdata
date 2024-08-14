@@ -3,188 +3,108 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Quản lý ra vào phòng</title>
+    <title>Login Page</title>
     <style>
         body {
             font-family: Arial, sans-serif;
+            background-color: #0093E9;
+            background-color: #D9AFD9;
+            background-image: linear-gradient(0deg, #D9AFD9 0%, #97D9E1 100%);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0 ;
+            
+            
+        }
+        .login-container {
+            display: block;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            width: 600px;
+            height: 300px;
+            background-color: white;
             padding: 20px;
-            background-color: #f7f6f6;
-            color: rgb(42, 31, 56);
+            border-radius: 70px;
+            box-shadow: 0 0 10px rgba(202, 99, 99, 0.1);
         }
-        h1 {
-            text-align: center;
-        }
-        form {
+        .login-container h2 {
             margin-bottom: 20px;
-            color: rgb(42, 31, 56);
+            font-size: 24px;
+            text-align: center;
+            padding-bottom: 30px;
         }
-        table {
+        .login-container input {
+            display: block;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
             margin-top: 20px;
-            width: 100%;
-            border-collapse: collapse;
+            width: 50%;
+            height: 40px;
+            padding: -10px;
+            margin-bottom: 10px;
+            border: 1px solid #d4e6fa;
+            border-radius: 25px;
         }
-        table, th, td {
-            border: 1px solid #ddd;
+        .login-container input:hover{
+            background-color: #d4e6fa;
         }
-        th, td {
+        .login-container button {
+            width: 50%;
             padding: 10px;
+            background-color: #007BFF;
+            border: none;
+            color: white;
+            border-radius: 25px;
+            cursor: pointer;
+        }
+        .login-container button:hover {
+            background-color: #0056b3;
+        }
+        .error-message {
+            color: red;
+            margin-top: 10px;
             text-align: center;
         }
-        th {
-            background-color: #f2f2f2;
+        #username, #password{
+            display: inline-block;
+            align-items: center;
+            margin-bottom: 20px;
+            margin-top: -10px;
         }
-        button {
-            margin-top: 10px;
-            padding: 5px 10px;
-            cursor: pointer;
-            border: none;
-            background-color: #9196d8;
-            border-radius: 20px;
-        }
-        button.delete {
-            background-color: red;
-            color: white;
-            border: none;
-        }
-        #name, #department, #employeeId{
-            border-radius: 20px;
-            width: 200px;
-            height: 20px;
-            border: none;
-            background-color: #ffff;
-            border: #46d47c 1px solid;
-            margin-left: 5px;
-        }
-        .btn-luu{
-            border: none;
-            background-color: #46d47c;
-            border-radius: 20px;
-        }
-        .btn-dangnhap{
-            border: none;
-            background-color: #46d47c;
-            border-radius: 20px;
-            margin-left: 20px;
-        }
-        
     </style>
 </head>
 <body>
-    <h1>Quản lý ra vào phòng IT</h1>
+    <div class="login-container">
+        <h2>Login</h2>
+        <input class="center" type="text" id="username" placeholder="Username" required>
+        <input class="center" type="password" id="password" placeholder="Password" required>
+        <button onclick="login()">Login</button>
+        <p id="error-message" class="error-message"></p>
+    </div>
 
-    <form id="entryForm">
-        <label for="name">Tên:</label>
-        <input type="text" id="name" required>
-        <label for="department">Bộ phận:</label>
-        <input type="text" id="department" required>
-        <label for="employeeId">Mã nhân viên:</label>
-        <input type="text" id="employeeId" required>
-        <button class="btn-dangnhap" type="submit">Đăng nhập</button>
-    </form>
-
-    <button class="btn-luu" onclick="downloadExcel()">Lưu về Excel</button>
-    <table>
-        <thead>
-            <tr>
-                <th>Tên</th>
-                <th>Bộ phận</th>
-                <th>Mã nhân viên</th>
-                <th>Thời gian vào</th>
-                <th>Thời gian ra</th>
-                <th>Hành động</th>
-            </tr>
-        </thead>
-        <tbody id="entryTableBody">
-        </tbody>
-    </table>
-
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.16.9/xlsx.full.min.js"></script>
     <script>
-        let entries = [];
+        function login() {
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+            const errorMessage = document.getElementById('error-message');
 
-        function renderTable() {
-            const tableBody = document.getElementById('entryTableBody');
-            tableBody.innerHTML = ''; // Xóa nội dung cũ
+            // Thông tin đăng nhập mẫu
+            const validUsername = "administrator";
+            const validPassword = "saosangesp";
 
-            entries.forEach((entry, index) => {
-                const row = document.createElement('tr');
-
-                const nameCell = document.createElement('td');
-                nameCell.textContent = entry.name;
-                row.appendChild(nameCell);
-
-                const departmentCell = document.createElement('td');
-                departmentCell.textContent = entry.department;
-                row.appendChild(departmentCell);
-
-                const employeeIdCell = document.createElement('td');
-                employeeIdCell.textContent = entry.employeeId;
-                row.appendChild(employeeIdCell);
-
-                const entryTimeCell = document.createElement('td');
-                entryTimeCell.textContent = entry.entryTime;
-                row.appendChild(entryTimeCell);
-
-                const exitTimeCell = document.createElement('td');
-                exitTimeCell.textContent = entry.exitTime || 'Chưa ra';
-                row.appendChild(exitTimeCell);
-
-                const actionCell = document.createElement('td');
-
-                if (!entry.exitTime) {
-                    const exitButton = document.createElement('button');
-                    exitButton.textContent = 'Đăng xuất';
-                    exitButton.onclick = () => {
-                        entry.exitTime = new Date().toLocaleString();
-                        renderTable();
-                    };
-                    actionCell.appendChild(exitButton);
-                }
-
-                const deleteButton = document.createElement('button');
-                deleteButton.textContent = 'Xóa';
-                deleteButton.className = 'delete';
-                deleteButton.onclick = () => {
-                    entries.splice(index, 1);
-                    renderTable();
-                };
-                actionCell.appendChild(deleteButton);
-
-                row.appendChild(actionCell);
-
-                tableBody.appendChild(row);
-            });
+            // Kiểm tra đăng nhập
+            if (username === validUsername && password === validPassword) {
+                alert("Login successful!");
+                // Chuyển hướng người dùng sau khi đăng nhập thành công
+                window.location.href = "index1.html";
+            } else {
+                errorMessage.textContent = "Invalid username or password!";
+            }
         }
-
-        document.getElementById('entryForm').addEventListener('submit', function(event) {
-            event.preventDefault();
-
-            const name = document.getElementById('name').value;
-            const department = document.getElementById('department').value;
-            const employeeId = document.getElementById('employeeId').value;
-            const entryTime = new Date().toLocaleString();
-
-            entries.push({ name, department, employeeId, entryTime, exitTime: null });
-            renderTable();
-
-            // Xóa nội dung nhập sau khi thêm
-            document.getElementById('name').value = '';
-            document.getElementById('department').value = '';
-            document.getElementById('employeeId').value = '';
-        });
-
-        function downloadExcel() {
-            // Chuyển đổi dữ liệu thành định dạng của bảng tính
-            const worksheet = XLSX.utils.json_to_sheet(entries);
-            const workbook = XLSX.utils.book_new();
-            XLSX.utils.book_append_sheet(workbook, worksheet, "Entries");
-
-            // Tạo và tải tệp Excel
-            XLSX.writeFile(workbook, 'quan_ly_ra_vao.xlsx' );
-            
-        }
-
-        renderTable(); // Khởi tạo bảng
     </script>
 </body>
 </html>
